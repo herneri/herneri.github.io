@@ -1,11 +1,15 @@
+import {track_language_count} from "./lang-stats.js";
+
 async function github_api_handling() {
 	const GITHUB_URL = "https://api.github.com/users/herneri";
 	var user_data;
 	var event_data;
+	var repo_data;
 
 	try {
-		user_data = await fetch(GITHUB_URL);;
-		event_data = await fetch(GITHUB_URL + "/events");;
+		user_data = await fetch(GITHUB_URL);
+		event_data = await fetch(GITHUB_URL + "/events");
+		repo_data = await fetch(GITHUB_URL + "/repos");
 	} catch (NetworkError) {
 		return -100;
 	}
@@ -16,7 +20,30 @@ async function github_api_handling() {
 		return -2;
 	}
 
-	return [await user_data.json(), await event_data.json()];
+	return [await user_data.json(), await event_data.json(), await repo_data.json()];
+}
+
+async function gather_repo_language_data(repos_json) {
+	const REPO_URL_BASE = "https://api.github.com/repos/herneri";
+	var repo_language_count = {};
+	const keys = Object.keys(repos_json);
+
+	keys.forEach(async function(key) {
+		const repo_language_data = await fetch(REPO_URL_BASE + "/" + repos_json[key]["name"] + "/languages");
+		if (!repo_language_data.ok) {
+			return -1;
+		}
+
+		const repo_language_json = await repo_language_data.json();
+
+		Object.keys(repo_language_json).forEach(function(repo_key) {
+			track_language_count(repo_language_count, repo_key, repo_language_json[repo_key]);
+		});
+
+		window.setTimeout(null, 20000);
+	});
+
+	return repo_language_count;
 }
 
 async function write_github_data() {
