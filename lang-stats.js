@@ -17,7 +17,7 @@
 /*
 	Store number of lines per language in an object
 */
-function track_language_count(languages_count, language_string, value) {
+export function track_language_count(languages_count, language_string, value) {
 	if (language_string in languages_count) {
 		languages_count[language_string] += value;
 		return;
@@ -34,7 +34,7 @@ function track_language_count(languages_count, language_string, value) {
 	NOTE: The total amount that languages are used is
 	calculated as they are being retrieved from the API.
 */
-function language_makeup(languages_count, total_count) {
+export function language_makeup(languages_count, total_count) {
 	var largest = -1;
 	var language_stats = {
 		"most_used": null
