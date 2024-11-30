@@ -14,6 +14,19 @@
 	limitations under the License.
 */
 
+/*
+	Store number of lines per language in an object
+*/
+function track_language_count(languages_count, language_string, value) {
+	if (language_string in languages_count) {
+		languages_count[language_string] += value;
+		return;
+	}
+
+	languages_count[language_string] = value;
+	return;
+}
+
 /* 
 	Pass data that was retrieved from the API
 	and calculate the percent of usage for the languages.
